@@ -1,0 +1,34 @@
+name: Radar Update
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # รันทุกๆ 10 นาที
+  workflow_dispatch:        # ปุ่มกดรันเอง (Manual)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run script
+        run: python main.py
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add index.html
+          git commit -m "Update radar map" || exit 0
+          git push
